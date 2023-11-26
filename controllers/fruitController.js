@@ -4,6 +4,7 @@ const fruitService = require("../services/fruitService")
 const fruitValidator = require("../validators/fruitValidator")
 const authenticationValidator = require("../validators/authenticationValidator")
 const paginationValidator = require("../validators/paginationValidator")
+const cache = require('../helpers/redisConfig')
 
 router.get("/",
     authenticationValidator.validateToken,
@@ -11,6 +12,13 @@ router.get("/",
     paginationValidator.validatePage,
     fruitValidator.validateFilter,
     fruitValidator.validateSubstring,
+    (req, res, next) => {
+        if (req.query.filter === "null" && req.query.substring === "null") {
+            return cache.route()(req, res, next);
+        } else {
+            next();
+        }
+    },
     async (req, res) => {
         const response = await fruitService.listFruit(
             req.query.limit,
@@ -32,6 +40,7 @@ router.post("/",
     fruitValidator.validateSugar,
     fruitValidator.validateCarbohydrates,
     fruitValidator.validateProtein,
+    cache.invalidate(),
     async (req, res) => {
         const response = await fruitService.registerFruit(
             req.body.name,
@@ -44,7 +53,8 @@ router.post("/",
             req.body.carbohydrates,
             req.body.protein
         )
-        res.status(response.status).json(response.data)
+
+        res.status(response.status).json(response.data);
     })
 
 module.exports = router
