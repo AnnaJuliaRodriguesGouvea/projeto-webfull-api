@@ -5,10 +5,10 @@ module.exports = {
         const {error, value} = Joi.string().required().validate(req.body.name)
         if (error) {
             if (error.details && error.details[0].type === 'string.empty') {
-                return res.status(400).json({ status: false, data: "O nome não pode ser nulo" });
+                return res.status(400).json("O nome não pode ser nulo");
             }
 
-            return res.status(400).json({ status: false, data: "Erro na validação do nome" });
+            return res.status(400).json("Erro na validação do nome");
         }
 
         req.body.name = value
@@ -19,10 +19,10 @@ module.exports = {
         const {error, value} = Joi.string().required().validate(req.body.family)
         if (error) {
             if (error.details && error.details[0].type === 'string.empty') {
-                return res.status(400).json({ status: false, data: "A família não pode ser nula" });
+                return res.status(400).json("A família não pode ser nula");
             }
 
-            return res.status(400).json({ status: false, data: "Erro na validação da família" });
+            return res.status(400).json("Erro na validação da família");
         }
 
         req.body.family = value
@@ -33,10 +33,10 @@ module.exports = {
         const {error, value} = Joi.string().required().validate(req.body.order)
         if (error) {
             if (error.details && error.details[0].type === 'string.empty') {
-                return res.status(400).json({ status: false, data: "A ordem não pode ser nula" });
+                return res.status(400).json("A ordem não pode ser nula");
             }
 
-            return res.status(400).json({ status: false, data: "Erro na validação da ordem" });
+            return res.status(400).json("Erro na validação da ordem");
         }
 
         req.body.order = value
@@ -47,10 +47,10 @@ module.exports = {
         const {error, value} = Joi.string().required().validate(req.body.genus)
         if (error) {
             if (error.details && error.details[0].type === 'string.empty') {
-                return res.status(400).json({ status: false, data: "O gênero não pode ser nula" });
+                return res.status(400).json("O gênero não pode ser nula");
             }
 
-            return res.status(400).json({ status: false, data: "Erro na validação do gênero" });
+            return res.status(400).json("Erro na validação do gênero");
         }
 
         req.body.genus = value
@@ -60,11 +60,11 @@ module.exports = {
     validateCalories: function(req, res, next) {
         const {error, value} = Joi.number().integer().required().validate(req.body.calories)
         if (error) {
-            if (error.details && error.details[0].type === 'string.empty') {
-                return res.status(400).json({ status: false, data: "As calorias não podem ser nula" });
+            if (error.details && error.details[0].type === 'number.base') {
+                return res.status(400).json("As calorias não podem ser nula");
             }
 
-            return res.status(400).json({ status: false, data: "Erro na validação das calorias" });
+            return res.status(400).json("Erro na validação das calorias");
         }
 
         req.body.calories = value
@@ -74,11 +74,11 @@ module.exports = {
     validateFat: function(req, res, next) {
         const {error, value} = Joi.number().integer().required().validate(req.body.fat)
         if (error) {
-            if (error.details && error.details[0].type === 'string.empty') {
-                return res.status(400).json({ status: false, data: "A gordura não pode ser nula" });
+            if (error.details && error.details[0].type === 'number.base') {
+                return res.status(400).json("A gordura não pode ser nula");
             }
 
-            return res.status(400).json({ status: false, data: "Erro na validação da gordura" });
+            return res.status(400).json("Erro na validação da gordura");
         }
 
         req.body.fat = value
@@ -88,11 +88,11 @@ module.exports = {
     validateSugar: function(req, res, next) {
         const {error, value} = Joi.number().integer().required().validate(req.body.sugar)
         if (error) {
-            if (error.details && error.details[0].type === 'string.empty') {
-                return res.status(400).json({ status: false, data: "O açúcar não pode ser nulo" });
+            if (error.details && error.details[0].type === 'number.base') {
+                return res.status(400).json("O açúcar não pode ser nulo");
             }
 
-            return res.status(400).json({ status: false, data: "Erro na validação do açúcar" });
+            return res.status(400).json("Erro na validação do açúcar");
         }
 
         req.body.sugar = value
@@ -102,11 +102,12 @@ module.exports = {
     validateCarbohydrates: function(req, res, next) {
         const {error, value} = Joi.number().integer().required().validate(req.body.carbohydrates)
         if (error) {
-            if (error.details && error.details[0].type === 'string.empty') {
-                return res.status(400).json({ status: false, data: "Os carboidratos não podem ser nulo" });
+            console.log("TESTE", error.details)
+            if (error.details && error.details[0].type === 'number.base') {
+                return res.status(400).json("Os carboidratos não podem ser nulo");
             }
 
-            return res.status(400).json({ status: false, data: "Erro na validação dos carboidratos" });
+            return res.status(400).json("Erro na validação dos carboidratos");
         }
 
         req.body.carbohydrates = value
@@ -116,14 +117,34 @@ module.exports = {
     validateProtein: function(req, res, next) {
         const {error, value} = Joi.number().integer().required().validate(req.body.protein)
         if (error) {
-            if (error.details && error.details[0].type === 'string.empty') {
-                return res.status(400).json({ status: false, data: "A proteína não pode ser nula" });
+            if (error.details && error.details[0].type === 'number.base') {
+                return res.status(400).json("A proteína não pode ser nula");
             }
 
-            return res.status(400).json({ status: false, data: "Erro na validação da proteína" });
+            return res.status(400).json("Erro na validação da proteína");
         }
 
         req.body.protein = value
+        return next()
+    },
+
+    validateFilter: function(req, res, next) {
+        const {error, value} = Joi.string().required().validate(req.query.filter)
+        if (error) {
+            return res.status(400).json("Erro na validação do filter");
+        }
+
+        req.query.filter = value
+        return next()
+    },
+
+    validateSubstring: function(req, res, next) {
+        const {error, value} = Joi.string().required().validate(req.query.substring)
+        if (error) {
+            return res.status(400).json("Erro na validação da substring");
+        }
+
+        req.query.substring = value
         return next()
     },
 }

@@ -1,4 +1,5 @@
 const fruitDao = require("../DAO/fruitDao")
+const {Op} = require("sequelize");
 
 module.exports = {
     existFruit: async function(name) {
@@ -13,8 +14,13 @@ module.exports = {
         return {status: 409, data: "Já existe uma fruta com esse nome"}
     },
 
-    listFruit: async function(limit, page) {
-        const fruits = await fruitDao.list(limit, page)
+    listFruit: async function(limit, page, filter, substring) {
+        let whereCondition = {}
+        if (filter !== "null" && substring !== "null") {
+            whereCondition[filter] = { [Op.iLike]: `%${substring}%` };
+        }
+
+        const fruits = await fruitDao.list(limit, page, whereCondition)
         if (fruits) {
             if(fruits.rows.length > 0) {
                 const formattedFruits = await Promise.all(
@@ -35,7 +41,13 @@ module.exports = {
                         };
                     })
                 );
-                return {status: 200, data: formattedFruits}
+
+                const response = {
+                    rows: formattedFruits,
+                    count: fruits.count,
+                    pageCount: Math.ceil(fruits.count / limit)
+                }
+                return {status: 200, data: response}
             }
             return {status: 204, data: "Não possui dados suficientes para essa página com esse limite"}
         }

@@ -1,11 +1,11 @@
 const FruitModel = require("../models/Fruit")
-const UserModel = require("../models/User");
 
 module.exports = {
-    list: async function(limit, page) {
+    list: async function(limit, page, whereCondition = {}) {
         return await FruitModel.findAndCountAll({
             limit: limit,
-            offset: (page - 1) * limit
+            offset: (page - 1) * limit,
+            where: whereCondition
         })
     },
 

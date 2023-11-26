@@ -10,10 +10,10 @@ module.exports = {
         if (error) {
             console.log(error.details)
             if (error.details && error.details[0].type === 'string.empty') {
-                return res.status(400).json({ status: false, data: "A senha não pode ser nula" });
+                return res.status(400).json("A senha não pode ser nula");
             }
 
-            return res.status(400).json({ status: false, data: "Erro na validação da senha" });
+            return res.status(400).json("Erro na validação da senha");
         }
 
         req.body.password = value

@@ -9,8 +9,15 @@ router.get("/",
     authenticationValidator.validateToken,
     paginationValidator.validateLimit,
     paginationValidator.validatePage,
+    fruitValidator.validateFilter,
+    fruitValidator.validateSubstring,
     async (req, res) => {
-        const response = await fruitService.listFruit(req.query.limit, req.query.page)
+        const response = await fruitService.listFruit(
+            req.query.limit,
+            req.query.page,
+            req.query.filter,
+            req.query.substring
+        )
         res.status(response.status).json(response.data)
     })
 
