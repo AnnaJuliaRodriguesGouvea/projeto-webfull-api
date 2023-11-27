@@ -11,4 +11,8 @@ module.exports = {
     getByEmail: async function(email) {
         return await UserModel.findOne({ where: { email: email } })
     },
+
+    getById: async function(id) {
+        return await UserModel.findByPk(id)
+    },
 }

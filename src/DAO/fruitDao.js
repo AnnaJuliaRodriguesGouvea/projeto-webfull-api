@@ -2,6 +2,7 @@ const FruitModel = require("../models/Fruit")
 
 module.exports = {
     list: async function(limit, page, whereCondition = {}) {
+        console.log("Entrei coisa chjata")
         return await FruitModel.findAndCountAll({
             limit: limit,
             offset: (page - 1) * limit,

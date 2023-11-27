@@ -1,6 +1,10 @@
 const userDao = require("../DAO/userDao")
 
 module.exports = {
+    getUserById: async function(id) {
+        return await userDao.getById(id)
+    },
+
     getUserByEmail: async function(email) {
         return await userDao.getByEmail(email)
     },

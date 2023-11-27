@@ -5,6 +5,7 @@ const fruitValidator = require("../validators/fruitValidator")
 const authenticationValidator = require("../validators/authenticationValidator")
 const paginationValidator = require("../validators/paginationValidator")
 const cache = require('../helpers/redisConfig')
+const userService = require("../services/userService");
 
 router.get("/",
     authenticationValidator.validateToken,
@@ -12,15 +13,22 @@ router.get("/",
     paginationValidator.validatePage,
     fruitValidator.validateFilter,
     fruitValidator.validateSubstring,
-    (req, res, next) => {
+    async (req, res, next) => {
         if (req.query.filter === "null" && req.query.substring === "null") {
-            return cache.route()(req, res, next);
+            const user = await userService.getUserById(req.idLogged)
+            if(!user) {
+                return res.status(500).json( "Usuário não encontrado");
+            }
+
+            fruitService.publish(req.idLogged, user, "buscaRealizadaCache")
+            return await cache.route()(req, res, next);
         } else {
             next();
         }
     },
     async (req, res) => {
         const response = await fruitService.listFruit(
+            req.idLogged,
             req.query.limit,
             req.query.page,
             req.query.filter,

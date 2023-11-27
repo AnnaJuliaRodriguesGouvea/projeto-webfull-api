@@ -1,9 +1,22 @@
 const fruitDao = require("../DAO/fruitDao")
 const {Op} = require("sequelize");
+const mq = require('../messaging/producers/publishQueue');
+const userService = require("./userService")
 
 module.exports = {
     existFruit: async function(name) {
         return await fruitDao.getByName(name) != null
+    },
+
+    publish: function(idLogged, user, acao) {
+        const message = {
+            data: new Date(),
+            acao: acao,
+            autorId: idLogged,
+            autorEmail: user.email
+        }
+
+        mq.publish('SistemaLogExchange', 'busca-fruits-realizada-log', JSON.stringify(message))
     },
 
     registerFruit: async function(name, family, order, genus, calories, fat, sugar, carbohydrates, protein) {
@@ -14,7 +27,7 @@ module.exports = {
         return {status: 409, data: "Já existe uma fruta com esse nome"}
     },
 
-    listFruit: async function(limit, page, filter, substring) {
+    listFruit: async function(idLogged, limit, page, filter, substring) {
         let whereCondition = {}
         if (filter !== "null" && substring !== "null") {
             whereCondition[filter] = { [Op.iLike]: `%${substring}%` };
@@ -22,6 +35,13 @@ module.exports = {
 
         const fruits = await fruitDao.list(limit, page, whereCondition)
         if (fruits) {
+            const user = await userService.getUserById(idLogged)
+            if (!user) {
+                return {status: 500, data: "Usuário não encontrado"}
+            }
+
+            this.publish(idLogged, user, "buscaRealizadaDB")
+
             if(fruits.rows.length > 0) {
                 const formattedFruits = await Promise.all(
                     fruits.rows.map(async (fruit) => {
