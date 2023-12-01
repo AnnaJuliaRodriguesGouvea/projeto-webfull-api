@@ -1,3 +1,4 @@
+const logger = require('../helpers/loggerConfig')
 let cache = require('express-redis-cache');
 
 cache = cache({
@@ -14,9 +15,13 @@ cache.invalidate = () => {
         }
         cache.del(route_name, (err) => {
             if (err) {
-                console.error(`Error invalidating cache for route ${route_name}: ${err}`);
+                let messageError = `Error invalidating cache for route ${route_name}: ${err}`
+                logger.logger.log('error', messageError)
+                console.error(messageError);
             } else {
-                console.log(`Cache invalidated for route: ${route_name}`);
+                let messageSucess = `Cache invalidated for route: ${route_name}`
+                logger.logger.log('info', messageSucess)
+                console.log(messageSucess);
             }
         });
         next()

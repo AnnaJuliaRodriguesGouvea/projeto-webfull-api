@@ -1,4 +1,5 @@
 const userDao = require("../DAO/userDao")
+const logger = require('../helpers/loggerConfig')
 
 module.exports = {
     getUserById: async function(id) {
@@ -16,9 +17,13 @@ module.exports = {
     registerUser: async function(email, password) {
         if(!await this.existEmail(email)) {
             const user = await userDao.insert(email, password)
+            logger.logger.log('info', "Sucesso ao cadastrar usuário!")
             return {status: 201, data: user}
         }
-        return {status: 409, data: "Já existe uma conta com esse email"}
+
+        let messageError = "Já existe uma conta com esse email"
+        logger.logger.log('error', messageError)
+        return {status: 409, data: messageError}
     }
 
 }

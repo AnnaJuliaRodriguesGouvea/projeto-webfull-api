@@ -1,5 +1,6 @@
 const amqp = require('amqplib/callback_api');
 const ON_DEATH = require('death');
+const logger = require('../../helpers/loggerConfig')
 
 const url = `amqp://${process.env.RABBITMQ_USER}:${process.env.RABBITMQ_PASSWORD}@${process.env.RABBITMQ_HOST}`;
 
@@ -7,17 +8,22 @@ const publish = (exchange, routerKey, msgPayload) => {
 
     amqp.connect(url, (connectError, connection) => {
 
-        if (connectError) { throw connectError; }
+        if (connectError) {
+            logger.logger.log('error', `Erro ao realizar conexão com RabbitMQ ${connectError}`)
+            throw connectError;
+        }
 
         connection.createChannel((channelError, channel) => {
 
-            if (channelError) { throw channelError; }
+            if (channelError) {
+                logger.logger.log('error', `Falha ao criar canal no RabbitMQ ${channelError}`)
+                throw channelError;
+            }
 
             channel.assertExchange(exchange, 'direct', {durable: true});
             channel.publish(exchange, routerKey, Buffer.from(msgPayload));
 
-            console.log(`\n[X] Send: ${routerKey}`);
-
+            logger.logger.log('info', `Mensagem postada na fila: ${routerKey}`)
             return '';
         });
 

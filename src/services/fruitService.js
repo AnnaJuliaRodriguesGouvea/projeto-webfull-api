@@ -2,18 +2,21 @@ const fruitDao = require("../DAO/fruitDao")
 const {Op} = require("sequelize");
 const mq = require('../messaging/producers/publishQueue');
 const userService = require("./userService")
+const logger = require('../helpers/loggerConfig')
 
 module.exports = {
     existFruit: async function(name) {
         return await fruitDao.getByName(name) != null
     },
 
-    publish: function(idLogged, user, acao) {
+    publish: function(idLogged, user, acao, filter, substring) {
         const message = {
             data: new Date(),
             acao: acao,
             autorId: idLogged,
-            autorEmail: user.email
+            autorEmail: user.email,
+            filter: filter,
+            substring: substring
         }
 
         mq.publish('SistemaLogExchange', 'busca-fruits-realizada-log', JSON.stringify(message))
@@ -22,13 +25,17 @@ module.exports = {
     registerFruit: async function(name, family, order, genus, calories, fat, sugar, carbohydrates, protein) {
         if(!await this.existFruit(name)) {
             const fruit = await fruitDao.insert(name, family, order, genus, calories, fat, sugar, carbohydrates, protein)
+            logger.logger.log('info', "Sucesso ao cadastrar fruta!")
             return {status: 201, data: fruit}
         }
-        return {status: 409, data: "Já existe uma fruta com esse nome"}
+        let messageError = "Já existe uma fruta com esse nome"
+        logger.logger.log('error', messageError)
+        return {status: 409, data: messageError}
     },
 
     listFruit: async function(idLogged, limit, page, filter, substring) {
         let whereCondition = {}
+        let messageError = ""
         if (filter !== "null" && substring !== "null") {
             whereCondition[filter] = { [Op.iLike]: `%${substring}%` };
         }
@@ -37,10 +44,12 @@ module.exports = {
         if (fruits) {
             const user = await userService.getUserById(idLogged)
             if (!user) {
-                return {status: 500, data: "Usuário não encontrado"}
+                messageError = "Usuário não encontrado"
+                logger.logger.log('error', messageError)
+                return {status: 500, data: messageError}
             }
 
-            this.publish(idLogged, user, "buscaRealizadaDB")
+            this.publish(idLogged, user, "buscaRealizadaDB", filter, substring)
 
             if(fruits.rows.length > 0) {
                 const formattedFruits = await Promise.all(
@@ -67,11 +76,17 @@ module.exports = {
                     count: fruits.count,
                     pageCount: Math.ceil(fruits.count / limit)
                 }
+
+                logger.logger.log('info', "Sucesso ao listar frutas!")
                 return {status: 200, data: response}
             }
-            return {status: 204, data: "Não possui dados suficientes para essa página com esse limite"}
+            messageError = "Não possui dados suficientes para essa página com esse limite"
+            logger.logger.log('error', messageError)
+            return {status: 204, data: messageError}
         }
-        return {status: 500, data: "Desculpe, não foi possível realizar essa pesquisa"}
+        messageError = "Desculpe, não foi possível realizar essa pesquisa"
+        logger.logger.log('error', messageError)
+        return {status: 500, data: messageError}
     },
 
 }
