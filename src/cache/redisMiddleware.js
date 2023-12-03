@@ -1,6 +1,6 @@
 const userService = require("../services/userService");
 const fruitService = require("../services/fruitService");
-const cache = require("../helpers/redisConfig");
+const cache = require("./redisConfig");
 const logger = require('../helpers/loggerConfig')
 
 module.exports = {

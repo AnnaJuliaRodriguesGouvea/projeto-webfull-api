@@ -3,6 +3,7 @@ const {Op} = require("sequelize");
 const mq = require('../messaging/producers/publishQueue');
 const userService = require("./userService")
 const logger = require('../helpers/loggerConfig')
+const websocket = require("../websocket/websocketConfig")
 
 module.exports = {
     existFruit: async function(name) {
@@ -22,10 +23,22 @@ module.exports = {
         mq.publish('SistemaLogExchange', 'busca-fruits-realizada-log', JSON.stringify(message))
     },
 
-    registerFruit: async function(name, family, order, genus, calories, fat, sugar, carbohydrates, protein) {
+    registerFruit: async function(idLogged, name, family, order, genus, calories, fat, sugar, carbohydrates, protein) {
         if(!await this.existFruit(name)) {
+            const users = await userService.getAllOtherUsers(idLogged)
+            if (!users) {
+                messageError = "Erro ao capturar todos os outros usuários"
+                logger.logger.log('error', messageError)
+                return {status: 500, data: messageError}
+            }
+
             const fruit = await fruitDao.insert(name, family, order, genus, calories, fat, sugar, carbohydrates, protein)
             logger.logger.log('info', "Sucesso ao cadastrar fruta!")
+
+            websocket.addNotification({
+                msg: `Inserido nova fruta por user id: ${idLogged}`,
+                users: users.map((user) => user.id)
+            })
             return {status: 201, data: fruit}
         }
         let messageError = "Já existe uma fruta com esse nome"

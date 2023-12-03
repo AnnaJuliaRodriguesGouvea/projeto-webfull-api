@@ -20,7 +20,7 @@ app.use(express.static(path.join(__dirname, 'public')))
 
 //Criando configuração de limite de requisições
 const apiRequestLimiter = rateLimit({
-    windowMs: 5 * 60 * 1000,
+    windowMs: 1000, //5 * 60 * 1000,
     max: 10,
     handler: function (req, res) {
         let messageError = 'Você enviou muitas solicitações. Aguarde um pouco e tente novamente'

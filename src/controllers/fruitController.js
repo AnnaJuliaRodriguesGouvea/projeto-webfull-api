@@ -4,7 +4,7 @@ const fruitService = require("../services/fruitService")
 const fruitValidator = require("../validators/fruitValidator")
 const authenticationValidator = require("../validators/authenticationValidator")
 const paginationValidator = require("../validators/paginationValidator")
-const cache = require('../helpers/redisConfig')
+const cache = require('../cache/redisConfig')
 const userService = require("../services/userService");
 const redisMiddleware = require("../cache/redisMiddleware")
 
@@ -40,6 +40,7 @@ router.post("/",
     cache.invalidate(),
     async (req, res) => {
         const response = await fruitService.registerFruit(
+            req.idLogged,
             req.body.name,
             req.body.family,
             req.body.order,

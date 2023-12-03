@@ -1,4 +1,5 @@
 const UserModel = require("../models/User")
+const {Op} = require("sequelize");
 
 module.exports = {
     insert: async function(email, password) {
@@ -14,5 +15,13 @@ module.exports = {
 
     getById: async function(id) {
         return await UserModel.findByPk(id)
+    },
+
+    getAllOtherUsers: async function(id) {
+        return await UserModel.findAll({
+            where: {
+                id: { [Op.ne]: id },
+            },
+        })
     },
 }

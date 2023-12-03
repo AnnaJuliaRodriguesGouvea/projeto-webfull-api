@@ -6,6 +6,10 @@ module.exports = {
         return await userDao.getById(id)
     },
 
+    getAllOtherUsers: async function(id){
+        return await userDao.getAllOtherUsers(id)
+    },
+
     getUserByEmail: async function(email) {
         return await userDao.getByEmail(email)
     },
