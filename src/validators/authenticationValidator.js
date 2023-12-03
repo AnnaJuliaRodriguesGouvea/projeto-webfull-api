@@ -5,8 +5,10 @@ const logger = require('../helpers/loggerConfig')
 module.exports = {
     validatePassword: function(req, res, next) {
         const {error, value} = Joi.string()
-                                    .required()
-                                    .validate(req.body.password)
+                                                .trim()
+                                                .normalize()
+                                                .required()
+                                                .validate(req.body.password)
 
         if (error) {
             let messageError = "Erro na validação da senha"

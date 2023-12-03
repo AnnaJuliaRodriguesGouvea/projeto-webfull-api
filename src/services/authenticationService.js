@@ -1,13 +1,18 @@
 const jwt = require('jsonwebtoken');
 const userService = require("./userService")
 const logger = require('../helpers/loggerConfig')
+const bcrypt = require("../helpers/bcryptConfig")
 
 module.exports = {
     login: async function(email, password) {
         const user = await userService.getUserByEmail(email);
         let messageError = "";
         if (user != null) {
-            if (user.password === password) {
+            const result = await bcrypt.comparePassword(password, user.password)
+            if(result.status === 500)
+                return result
+
+            if (result.data) {
                 let token = jwt.sign({idLogged: user.id}, process.env.JWT_SECRET, {
                     expiresIn: '1h'
                 })

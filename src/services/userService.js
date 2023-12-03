@@ -1,5 +1,6 @@
 const userDao = require("../DAO/userDao")
 const logger = require('../helpers/loggerConfig')
+const bcrypt = require("../helpers/bcryptConfig")
 
 module.exports = {
     getUserById: async function(id) {
@@ -20,7 +21,12 @@ module.exports = {
 
     registerUser: async function(email, password) {
         if(!await this.existEmail(email)) {
-            const user = await userDao.insert(email, password)
+            const result = await bcrypt.encodePassword(password)
+            console.log(result)
+            if(result.status === 500) {
+                return result
+            }
+            const user = await userDao.insert(email, result.data)
             logger.logger.log('info', "Sucesso ao cadastrar usuário!")
             return {status: 201, data: user}
         }

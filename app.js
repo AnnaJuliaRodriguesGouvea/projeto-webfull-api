@@ -1,3 +1,12 @@
+const https = require("https");
+const fs = require("fs");
+
+const options = {
+    key: fs.readFileSync("./src/certificates/private_key.pem"),
+    cert: fs.readFileSync("./src/certificates/server.pem"),
+    passphrase: "anna"
+};
+
 //Configurando express
 const express = require("express")
 const cors = require('cors')
@@ -20,8 +29,8 @@ app.use(express.static(path.join(__dirname, 'public')))
 
 //Criando configuração de limite de requisições
 const apiRequestLimiter = rateLimit({
-    windowMs: 1000, //5 * 60 * 1000,
-    max: 10,
+    windowMs: 5000,
+    max: 5,
     handler: function (req, res) {
         let messageError = 'Você enviou muitas solicitações. Aguarde um pouco e tente novamente'
         logger.logger.log('error', messageError)
@@ -35,9 +44,9 @@ app.use("/", require("./src/controllers/authenticationController"))
 app.use("/user", require("./src/controllers/userController"))
 app.use("/fruit", require("./src/controllers/fruitController"))
 
-app.listen(3001, () => {
+https.createServer(options, app).listen(3001, () => {
     // installDB.install()
     //   .then(() => console.log("Banco instalado com sucesso"))
     //   .catch((error) => console.error(error))
     console.log("Rodando na porta 3001")
-})
+});

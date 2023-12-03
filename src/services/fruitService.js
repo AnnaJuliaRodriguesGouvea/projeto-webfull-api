@@ -12,7 +12,7 @@ module.exports = {
 
     publish: function(idLogged, user, acao, filter, substring) {
         const message = {
-            data: new Date(),
+            data: new Date().toLocaleString("pt-BR", {timeZone: "America/Sao_Paulo"}),
             acao: acao,
             autorId: idLogged,
             autorEmail: user.email,

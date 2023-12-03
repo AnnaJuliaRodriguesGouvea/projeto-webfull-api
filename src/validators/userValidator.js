@@ -3,7 +3,29 @@ const logger = require('../helpers/loggerConfig')
 
 module.exports = {
     validateEmail: function(req, res, next) {
-        const {error, value} = Joi.string().email().required().validate(req.body.email)
+        const {error, value} = Joi.string()
+                                                    .trim()
+                                                    .normalize()
+                                                    // .replace(/([&<>"'\/])/g, function(match) {
+                                                    //     switch (match) {
+                                                    //         case '&':
+                                                    //             return '&amp;';
+                                                    //         case '<':
+                                                    //             return '&lt;';
+                                                    //         case '>':
+                                                    //             return '&gt;';
+                                                    //         case '"':
+                                                    //             return '&quot;';
+                                                    //         case "'":
+                                                    //             return '&#39;';
+                                                    //         case '/':
+                                                    //             return '&#x2F;';
+                                                    //         default:
+                                                    //             return match;
+                                                    //     }
+                                                    // })
+                                                    .email()
+                                                    .required().validate(req.body.email)
         if (error) {
             let messageError = "Erro na validação do email"
             if (error.details && error.details[0].type === 'string.empty') {
@@ -28,10 +50,12 @@ module.exports = {
 
     validatePassword: function(req, res, next) {
         const {error, value} = Joi.string()
-                                    .min(6)
-                                    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/)
-                                    .required()
-                                    .validate(req.body.password)
+                                                .trim()
+                                                .normalize()
+                                                .min(6)
+                                                .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/)
+                                                .required()
+                                                .validate(req.body.password)
 
         if (error) {
             let messageError = "Erro na validação da senha"
