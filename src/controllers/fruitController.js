@@ -5,7 +5,6 @@ const fruitValidator = require("../validators/fruitValidator")
 const authenticationValidator = require("../validators/authenticationValidator")
 const paginationValidator = require("../validators/paginationValidator")
 const cache = require('../cache/redisConfig')
-const userService = require("../services/userService");
 const redisMiddleware = require("../cache/redisMiddleware")
 
 router.get("/",

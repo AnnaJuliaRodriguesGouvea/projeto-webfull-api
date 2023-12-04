@@ -12,7 +12,7 @@ module.exports = {
 
     publish: function(idLogged, user, acao, filter, substring) {
         const message = {
-            data: new Date().toLocaleString("pt-BR", {timeZone: "America/Sao_Paulo"}),
+            data: new Date(),
             acao: acao,
             autorId: idLogged,
             autorEmail: user.email,
@@ -20,6 +20,7 @@ module.exports = {
             substring: substring
         }
 
+        console.log("Entrei")
         mq.publish('SistemaLogExchange', 'busca-fruits-realizada-log', JSON.stringify(message))
     },
 
@@ -36,6 +37,7 @@ module.exports = {
             logger.logger.log('info', "Sucesso ao cadastrar fruta!")
 
             websocket.addNotification({
+                publisherId: idLogged,
                 msg: `Inserido nova fruta por user id: ${idLogged}`,
                 users: users.map((user) => user.id)
             })

@@ -12,7 +12,8 @@ module.exports = {
             return res.status(500).json(messageError);
         }
 
-        fruitService.publish(req.idLogged, user, "buscaRealizadaCache", req.query.filter, req.query.substring)
-        return await cache.route({ expire: 60  })(req, res, next);
+        return await cache.validateCache({ expire: 60 }, user, fruitService.publish)(req, res, next);
+        // fruitService.publish(req.idLogged, user, "buscaRealizadaCache", req.query.filter, req.query.substring)
+        // return await cache.route({ expire: 60  })(req, res, next);
     },
 }

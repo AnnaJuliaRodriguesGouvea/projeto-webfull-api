@@ -31,19 +31,27 @@ server.on('connection', function connection(socket, req) {
 
     const sendNotification = () => {
         server.clients.forEach(function each(client) {
-            if (client !== socket && client.readyState === WebSocket.OPEN) {
-                notifications.forEach((notification) => {
+            console.log("entrei for each 1")
+            notifications.forEach((notification) => {
+                if(notification.publisherId !== socket.userId) {
+                    console.log("entrei for each 2")
                     if(notification.users.includes(client.userId)) {
+                        console.log("message", notification.msg)
                         client.send(notification.msg, { binary: false });
                         notification.users = notification.users.filter(id => id !== client.userId);
                     }
-                })
-                notifications = notifications.filter((notification) => notification.users.length !== 0)
-            }
+                }
+            })
+            notifications = notifications.filter((notification) => notification.users.length !== 0)
+            // if (client !== socket && client.readyState === WebSocket.OPEN) {
+            //     console.log("entrei if 1")
+            //
+            // }
         });
     }
 
     const intervalNotification = setInterval(function ping() {
+        console.log("user", socket.userId)
         sendNotification()
     }, 3000);
 

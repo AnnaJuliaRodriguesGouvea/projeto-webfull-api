@@ -3,27 +3,9 @@ const logger = require('../helpers/loggerConfig')
 
 module.exports = {
     validateEmail: function(req, res, next) {
-        const {error, value} = Joi.string()
+        let {error, value} = Joi.string()
                                                     .trim()
                                                     .normalize()
-                                                    // .replace(/([&<>"'\/])/g, function(match) {
-                                                    //     switch (match) {
-                                                    //         case '&':
-                                                    //             return '&amp;';
-                                                    //         case '<':
-                                                    //             return '&lt;';
-                                                    //         case '>':
-                                                    //             return '&gt;';
-                                                    //         case '"':
-                                                    //             return '&quot;';
-                                                    //         case "'":
-                                                    //             return '&#39;';
-                                                    //         case '/':
-                                                    //             return '&#x2F;';
-                                                    //         default:
-                                                    //             return match;
-                                                    //     }
-                                                    // })
                                                     .email()
                                                     .required().validate(req.body.email)
         if (error) {
@@ -43,6 +25,25 @@ module.exports = {
             logger.logger.log('error', messageError)
             return res.status(400).json(messageError);
         }
+
+        value = value.replace(/([&<>"'\/])/g, (match) => {
+            switch (match) {
+                case '&':
+                    return '&amp;';
+                case '<':
+                    return '&lt;';
+                case '>':
+                    return '&gt;';
+                case '"':
+                    return '&quot;';
+                case "'":
+                    return '&#39;';
+                case '/':
+                    return '&#x2F;';
+                default:
+                    return match;
+            }
+        })
 
         req.body.email = value
         return next()

@@ -3,27 +3,9 @@ const logger = require('../helpers/loggerConfig')
 
 module.exports = {
     validateName: function(req, res, next) {
-        const {error, value} = Joi.string()
+        let {error, value} = Joi.string()
                                                 .trim()
                                                 .normalize()
-                                                // .replace(/([&<>"'\/])/g, function(match) {
-                                                //     switch (match) {
-                                                //         case '&':
-                                                //             return '&amp;';
-                                                //         case '<':
-                                                //             return '&lt;';
-                                                //         case '>':
-                                                //             return '&gt;';
-                                                //         case '"':
-                                                //             return '&quot;';
-                                                //         case "'":
-                                                //             return '&#39;';
-                                                //         case '/':
-                                                //             return '&#x2F;';
-                                                //         default:
-                                                //             return match;
-                                                //     }
-                                                // })
                                                 .required().validate(req.body.name)
         if (error) {
             let messageError = "Erro na validação do nome"
@@ -36,32 +18,33 @@ module.exports = {
             return res.status(400).json(messageError);
         }
 
+        value = value.replace(/([&<>"'\/])/g, (match) => {
+            switch (match) {
+                case '&':
+                    return '&amp;';
+                case '<':
+                    return '&lt;';
+                case '>':
+                    return '&gt;';
+                case '"':
+                    return '&quot;';
+                case "'":
+                    return '&#39;';
+                case '/':
+                    return '&#x2F;';
+                default:
+                    return match;
+            }
+        })
+
         req.body.name = value
         return next()
     },
 
     validateFamily: function(req, res, next) {
-        const {error, value} = Joi.string()
+        let {error, value} = Joi.string()
                                                 .trim()
                                                 .normalize()
-                                                // .replace(/([&<>"'\/])/g, function(match) {
-                                                //     switch (match) {
-                                                //         case '&':
-                                                //             return '&amp;';
-                                                //         case '<':
-                                                //             return '&lt;';
-                                                //         case '>':
-                                                //             return '&gt;';
-                                                //         case '"':
-                                                //             return '&quot;';
-                                                //         case "'":
-                                                //             return '&#39;';
-                                                //         case '/':
-                                                //             return '&#x2F;';
-                                                //         default:
-                                                //             return match;
-                                                //     }
-                                                // })
                                                 .required().validate(req.body.family)
         if (error) {
             let messageError = "Erro na validação da família"
@@ -74,32 +57,33 @@ module.exports = {
             return res.status(400).json(messageError);
         }
 
+        value = value.replace(/([&<>"'\/])/g, (match) => {
+            switch (match) {
+                case '&':
+                    return '&amp;';
+                case '<':
+                    return '&lt;';
+                case '>':
+                    return '&gt;';
+                case '"':
+                    return '&quot;';
+                case "'":
+                    return '&#39;';
+                case '/':
+                    return '&#x2F;';
+                default:
+                    return match;
+            }
+        })
+
         req.body.family = value
         return next()
     },
 
     validateOrder: function(req, res, next) {
-        const {error, value} = Joi.string()
+        let {error, value} = Joi.string()
                                                 .trim()
                                                 .normalize()
-                                                // .replace(/([&<>"'\/])/g, function(match) {
-                                                //     switch (match) {
-                                                //         case '&':
-                                                //             return '&amp;';
-                                                //         case '<':
-                                                //             return '&lt;';
-                                                //         case '>':
-                                                //             return '&gt;';
-                                                //         case '"':
-                                                //             return '&quot;';
-                                                //         case "'":
-                                                //             return '&#39;';
-                                                //         case '/':
-                                                //             return '&#x2F;';
-                                                //         default:
-                                                //             return match;
-                                                //     }
-                                                // })
                                                 .required().validate(req.body.order)
         if (error) {
             let messageError = "Erro na validação da ordem"
@@ -112,32 +96,33 @@ module.exports = {
             return res.status(400).json(messageError);
         }
 
+        value = value.replace(/([&<>"'\/])/g, (match) => {
+            switch (match) {
+                case '&':
+                    return '&amp;';
+                case '<':
+                    return '&lt;';
+                case '>':
+                    return '&gt;';
+                case '"':
+                    return '&quot;';
+                case "'":
+                    return '&#39;';
+                case '/':
+                    return '&#x2F;';
+                default:
+                    return match;
+            }
+        })
+
         req.body.order = value
         return next()
     },
 
     validateGenus: function(req, res, next) {
-        const {error, value} = Joi.string()
+        let {error, value} = Joi.string()
                                                 .trim()
                                                 .normalize()
-                                                // .replace(/([&<>"'\/])/g, function(match) {
-                                                //     switch (match) {
-                                                //         case '&':
-                                                //             return '&amp;';
-                                                //         case '<':
-                                                //             return '&lt;';
-                                                //         case '>':
-                                                //             return '&gt;';
-                                                //         case '"':
-                                                //             return '&quot;';
-                                                //         case "'":
-                                                //             return '&#39;';
-                                                //         case '/':
-                                                //             return '&#x2F;';
-                                                //         default:
-                                                //             return match;
-                                                //     }
-                                                // })
                                                 .required().validate(req.body.genus)
         if (error) {
             let messageError = "Erro na validação do gênero"
@@ -149,6 +134,25 @@ module.exports = {
             logger.logger.log('error', messageError)
             return res.status(400).json(messageError);
         }
+
+        value = value.replace(/([&<>"'\/])/g, (match) => {
+            switch (match) {
+                case '&':
+                    return '&amp;';
+                case '<':
+                    return '&lt;';
+                case '>':
+                    return '&gt;';
+                case '"':
+                    return '&quot;';
+                case "'":
+                    return '&#39;';
+                case '/':
+                    return '&#x2F;';
+                default:
+                    return match;
+            }
+        })
 
         req.body.genus = value
         return next()
